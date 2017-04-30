@@ -1,7 +1,10 @@
-from azure.mgmt.cognitiveservices import CognitiveServicesManagementClient
-from azure.common.credentials import UserPassCredentials
+import json
 import cfg
 
 c = cfg.read_cfg()
 
-subscription_id = c['txtkey']
+sub_id = c['txtkey']
+
+key = "Ocp-Apim-Subscription-Key:" + sub_id
+content = "Content - Type: application / json"
+accept = "Accept: application / json"
