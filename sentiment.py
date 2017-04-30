@@ -1,10 +1,12 @@
-import json
+#!/usr/bin/python3
+
 import requests
-import cfg
+import configparser
 
-c = cfg.read_cfg()
+cfg = configparser.ConfigParser()
+cfg.read('config.ini')
 
-sub_id = c['txtkey']
+sub_id = cfg['cognitive']['key']
 
 
 headers = {"Ocp-Apim-Subscription-Key": sub_id,
