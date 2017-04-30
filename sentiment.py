@@ -2,6 +2,7 @@
 
 import requests
 import configparser
+import json
 
 cfg = configparser.ConfigParser()
 cfg.read('config.ini')
@@ -41,7 +42,7 @@ def build_docs(sententences):
                 "id": id,
                 "text": sentence}
         doclist.append(item)
-    docs = {"documents": doclist}
+    docs = json.dumps({"documents": doclist})
 
     return docs
 
