@@ -23,9 +23,9 @@ comments = ['Great site.  Maybe free shipping for items over 49 dollars for all 
             'The prices for most products are reasonable.  There are options for all pricing levels in most categories.  Shipping charges seem a bit high though.']
 
 
-def send_docs(msc=sent, headers=headers, docs=docs):
+def send_docs(data, msc=sent, headers=headers):
 
-    r = requests.post(msc, headers, data=docs)
+    r = requests.post(msc, headers, data=data)
     score = r.json()
 
     return score
@@ -47,8 +47,9 @@ def build_docs(sententences):
 
 
 def main():
-    docs = build_docs(comments)
-    score = send_docs(msc=sent, headers=headers, docs=docs)
+    doc = build_docs(comments)
+
+    score = send_docs(doc, msc=sent, headers=headers)
     print(score)
 
 
