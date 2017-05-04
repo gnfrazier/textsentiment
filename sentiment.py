@@ -11,22 +11,26 @@ sub_id = cfg['cognitive']['key']
 
 
 headers = {"Ocp-Apim-Subscription-Key": sub_id,
-           "Content - Type": "application / json",
-           "Accept": "application / json"}
+           "Content-Type": "application/json",
+           "Accept": "application/json"}
 
+headstring = 'Ocp-Apim-Subscription-Key: ' + sub_id + \
+    '/r/nContent - Type: application / json/r/nAccept: application / json'
 uri = 'https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/'
+testuri = 'http://headers.jsontest.com/'
+
 
 sent = uri + 'sentiment'
+# sent = testuri
 keyphrase = uri + 'keyPhrases'
 lang = uri + 'languages'
 
-comments = ['Great site.  Maybe free shipping for items over 49 dollars for all of us steady repeat customers.   Sometimes I have to wait for the shipping specials then I change my mind and do not order',
-            'The prices for most products are reasonable.  There are options for all pricing levels in most categories.  Shipping charges seem a bit high though.']
+comments = ['I am so happy', 'I am so mad', 'I dont know how I feel']
 
 
 def send_docs(data, msc=sent, headers=headers):
 
-    r = requests.post(msc, headers, data=data)
+    r = requests.post(msc, headers=headers, data=data)
     score = r.json()
 
     return score
@@ -42,7 +46,8 @@ def build_docs(sententences):
                 "id": id,
                 "text": sentence}
         doclist.append(item)
-    docs = json.dumps({"documents": doclist})
+    docs = {"documents": doclist}
+    docs = json.dumps(docs)
 
     return docs
 
