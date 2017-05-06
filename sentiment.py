@@ -14,10 +14,9 @@ headers = {"Ocp-Apim-Subscription-Key": sub_id,
            "Content-Type": "application/json",
            "Accept": "application/json"}
 
-headstring = 'Ocp-Apim-Subscription-Key: ' + sub_id + \
-    '/r/nContent - Type: application / json/r/nAccept: application / json'
 uri = 'https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/'
-testuri = 'http://headers.jsontest.com/'
+
+# testuri = 'http://headers.jsontest.com/'
 
 
 sent = uri + 'sentiment'
@@ -25,10 +24,12 @@ sent = uri + 'sentiment'
 keyphrase = uri + 'keyPhrases'
 lang = uri + 'languages'
 
+# Sample sentences
 comments = ['I am so happy', 'I am so mad', 'I dont know how I feel']
 
 
 def send_docs(data, msc=sent, headers=headers):
+    '''Post json to URL passed as msc.'''
 
     r = requests.post(msc, headers=headers, data=data)
     score = r.json()
@@ -36,10 +37,11 @@ def send_docs(data, msc=sent, headers=headers):
     return score
 
 
-def build_docs(sententences):
+def build_docs(sententences, id=1000):
+    '''Produce json message body from list of sententences.'''
 
     doclist = []
-    id = 1000
+
     for sentence in sententences:
         id += 1
         item = {"language": "en",
