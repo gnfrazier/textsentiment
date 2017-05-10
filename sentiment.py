@@ -54,6 +54,16 @@ def build_docs(sententences, id=1000):
     return docs
 
 
+def test_docs(doc=None, msc=None, headers=None):
+    '''A score for 3 sentences for dev to reduce api calls.'''
+
+    score = {'documents': [{'id': '1001', 'score': 0.971985986240645}, {
+        'id': '1002', 'score': 0.048940735444031},
+        {'id': '1003', 'score': 0.144271018300534}], 'errors': []}
+
+    return score
+
+
 def main():
     doc = build_docs(comments)
 
