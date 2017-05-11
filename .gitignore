@@ -3,6 +3,8 @@ config.ini
 sourcetext.csv
 output.csv
 config.json
+scratchpad.py
+*.xls
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

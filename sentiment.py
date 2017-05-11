@@ -26,15 +26,33 @@ lang = uri + 'languages'
 
 # Sample sentences
 comments = ['I am so happy', 'I am so mad', 'I dont know how I feel']
+cdict = {'1001': 'I am so happy', '1002': 'I am so mad',
+         '1003': 'I dont know how I feel'}
 
 
 def send_docs(data, msc=sent, headers=headers):
     '''Post json to URL passed as msc.'''
 
-    r = requests.post(msc, headers=headers, data=data)
-    score = r.json()
+    req = requests.post(msc, headers=headers, data=data)
+    score = req.json()
 
     return score
+
+
+def build_fdict(cdict):
+    '''Produce json message body from dictionary of id : sentences.'''
+
+    doclist = []
+    for id, sentence in cdict.items():
+
+        item = {"language": "en",
+                "id": id,
+                "text": sentence}
+        doclist.append(item)
+    docs = {"documents": doclist}
+    docs = json.dumps(docs)
+
+    return docs
 
 
 def build_docs(sententences, id=1000):
@@ -64,11 +82,23 @@ def test_docs(doc=None, msc=None, headers=None):
     return score
 
 
-def main():
-    doc = build_docs(comments)
+def parse_score(score, review=None):
+    if not review:
+        review = {}
 
+    for result in score['documents']:
+        review[result['id']] = result['score']
+
+    return review
+
+
+def main():
+    # doc = build_docs(comments)
+    doc = build_fdict(cdict)
     score = send_docs(doc, msc=sent, headers=headers)
     print(score)
+    parsed = parse_score(score)
+    print(parsed)
 
 
 if __name__ == '__main__':
