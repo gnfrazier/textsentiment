@@ -3,6 +3,7 @@
 import requests
 import configparser
 import json
+from collections import namedtuple
 
 cfg = configparser.ConfigParser()
 cfg.read('config.ini')
@@ -10,30 +11,43 @@ cfg.read('config.ini')
 sub_id = cfg['cognitive']['key']
 
 
-headers = {"Ocp-Apim-Subscription-Key": sub_id,
-           "Content-Type": "application/json",
-           "Accept": "application/json"}
-
-uri = 'https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/'
-
-# testuri = 'http://headers.jsontest.com/'
+def get_headers():
+    headers = {"Ocp-Apim-Subscription-Key": sub_id,
+               "Content-Type": "application/json",
+               "Accept": "application/json"}
+    return headers
 
 
-sent = uri + 'sentiment'
-# sent = testuri
-keyphrase = uri + 'keyPhrases'
-lang = uri + 'languages'
+def get_url(scoretype):
+    '''This function is not working'''
+
+    uri = 'https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/'
+    module = namedtuple('module', ['sent', 'keyphrase', 'lang'])
+
+    stype = module(sent=uri + 'sentiment',
+                   keyphrase=uri + 'keyPhrases',
+                   lang=uri + 'languages')
+    url = stype.scortype
+    return url
+
 
 # Sample sentences
-comments = ['I am so happy', 'I am so mad', 'I dont know how I feel']
 cdict = {'1001': 'I am so happy', '1002': 'I am so mad',
          '1003': 'I dont know how I feel'}
+# testuri = 'http://headers.jsontest.com/'
+# sent = testuri
 
 
-def send_docs(data, msc=sent, headers=headers):
+def send_docs(data, url=None, headers=None):
     '''Post json to URL passed as msc.'''
 
-    req = requests.post(msc, headers=headers, data=data)
+    if not headers:
+        headers = get_headers()
+
+    if not url:
+        url = get_url(sent)  # sentiment is default
+
+    req = requests.post(url, headers=headers, data=data)
     score = req.json()
 
     return score
@@ -43,27 +57,10 @@ def build_fdict(cdict):
     '''Produce json message body from dictionary of id : sentences.'''
 
     doclist = []
-    for id, sentence in cdict.items():
+    for idnum, sentence in cdict.items():
 
         item = {"language": "en",
-                "id": id,
-                "text": sentence}
-        doclist.append(item)
-    docs = {"documents": doclist}
-    docs = json.dumps(docs)
-
-    return docs
-
-
-def build_docs(sententences, id=1000):
-    '''Produce json message body from list of sententences.'''
-
-    doclist = []
-
-    for sentence in sententences:
-        id += 1
-        item = {"language": "en",
-                "id": id,
+                "id": idnum,
                 "text": sentence}
         doclist.append(item)
     docs = {"documents": doclist}
@@ -93,7 +90,7 @@ def parse_score(score, review=None):
 
 
 def main():
-    # doc = build_docs(comments)
+
     doc = build_fdict(cdict)
     score = send_docs(doc, msc=sent, headers=headers)
     print(score)
