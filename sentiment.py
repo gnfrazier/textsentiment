@@ -19,15 +19,14 @@ def get_headers():
 
 
 def get_url(scoretype):
-    '''This function is not working'''
+    '''Create URL based on query type'''
 
     uri = 'https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/'
-    module = namedtuple('module', ['sent', 'keyphrase', 'lang'])
 
-    stype = module(sent=uri + 'sentiment',
-                   keyphrase=uri + 'keyPhrases',
-                   lang=uri + 'languages')
-    url = stype.scortype
+    stype = {'sent': uri + 'sentiment',
+             'keyphrase': uri + 'keyPhrases',
+             'lang': uri + 'languages'}
+    url = stype[scoretype]
     return url
 
 
@@ -38,14 +37,17 @@ cdict = {'1001': 'I am so happy', '1002': 'I am so mad',
 # sent = testuri
 
 
-def send_docs(data, url=None, headers=None):
-    '''Post json to URL passed as msc.'''
+def send_docs(data, stype=None, url=None, headers=None):
+    '''Post json to URL passed as data'''
 
     if not headers:
         headers = get_headers()
 
+    if not stype:
+        stype = 'sent'  # sentiment is default
+
     if not url:
-        url = get_url(sent)  # sentiment is default
+        url = get_url(stype)
 
     req = requests.post(url, headers=headers, data=data)
     score = req.json()
@@ -53,7 +55,7 @@ def send_docs(data, url=None, headers=None):
     return score
 
 
-def build_fdict(cdict):
+def build_docs(cdict):
     '''Produce json message body from dictionary of id : sentences.'''
 
     doclist = []
@@ -79,22 +81,34 @@ def test_docs(doc=None, msc=None, headers=None):
     return score
 
 
-def parse_score(score, review=None):
+def test_phrase():
+    phrase = {'errors': [], 'documents': [
+        {'keyPhrases': ['happy'], 'id': '1001'},
+        {'keyPhrases': ['mad'], 'id': '1002'},
+        {'keyPhrases': ['dont'], 'id': '1003'}]}
+
+    return phrase
+
+
+def parse_score(score, stype, review=None):
     if not review:
         review = {}
 
+    stype_ref = {'sent': 'score',
+                 'keyphrase': 'keyPhrases', 'lang': 'language'}
+    ref = stype_ref[stype]
     for result in score['documents']:
-        review[result['id']] = result['score']
+        review[result['id']] = result[ref]
 
     return review
 
 
 def main():
-
-    doc = build_fdict(cdict)
-    score = send_docs(doc, msc=sent, headers=headers)
+    stype = 'keyphrase'
+    doc = build_docs(cdict)
+    score = send_docs(doc, stype)
     print(score)
-    parsed = parse_score(score)
+    parsed = parse_score(score, stype)
     print(parsed)
 
 
