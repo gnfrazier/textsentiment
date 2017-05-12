@@ -3,15 +3,23 @@
 import requests
 import configparser
 import json
-from collections import namedtuple
+
 
 cfg = configparser.ConfigParser()
 cfg.read('config.ini')
 
 sub_id = cfg['cognitive']['key']
 
+# Sample sentences
+cdict = {'1001': 'I am so happy', '1002': 'I am so mad',
+         '1003': 'I dont know how I feel'}
+# testuri = 'http://headers.jsontest.com/'
+# sent = testuri
+
 
 def get_headers():
+    '''Default headers with sub_id from global value'''
+
     headers = {"Ocp-Apim-Subscription-Key": sub_id,
                "Content-Type": "application/json",
                "Accept": "application/json"}
@@ -28,13 +36,6 @@ def get_url(scoretype):
              'lang': uri + 'languages'}
     url = stype[scoretype]
     return url
-
-
-# Sample sentences
-cdict = {'1001': 'I am so happy', '1002': 'I am so mad',
-         '1003': 'I dont know how I feel'}
-# testuri = 'http://headers.jsontest.com/'
-# sent = testuri
 
 
 def send_docs(data, stype=None, url=None, headers=None):
@@ -82,6 +83,8 @@ def test_docs(doc=None, msc=None, headers=None):
 
 
 def test_phrase():
+    '''Keyphrases for 3 sentences for dev to reduce api calls'''
+
     phrase = {'errors': [], 'documents': [
         {'keyPhrases': ['happy'], 'id': '1001'},
         {'keyPhrases': ['mad'], 'id': '1002'},
@@ -91,6 +94,8 @@ def test_phrase():
 
 
 def parse_score(score, stype, review=None):
+    '''Take documents and return score or phrases as dict with id as key'''
+
     if not review:
         review = {}
 
